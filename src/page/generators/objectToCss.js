@@ -1,6 +1,9 @@
+import { DumperError } from "../../error/index.js";
+
+
 export function objectToCss(obj) {
     if(!obj || typeof obj !== "object") {
-        throw new Error(`Invalid object! Object: [${ obj }]`);
+        throw new DumperError("objectToCss","objectToCss", `Invalid object! Object: [${ obj }]`);
     }
 
 
@@ -15,7 +18,7 @@ export function objectToCss(obj) {
             }
             css += "}\n"
         }else {
-            throw new Error(`Invalid object passed to convert to CSS file! Invalid key: [${ key }]`);
+            throw new DumperError("objectToCss","objectToCss", `Invalid object passed to convert to CSS file! Invalid key: [${ key }]`);
         }
     }
 

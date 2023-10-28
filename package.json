@@ -18,10 +18,7 @@
     "url": "git+https://github.com/Ma11y1/vk-dumper.git"
   },
   "description": "",
-  "bugs": {
-    "url": "https://github.com/Ma11y1/vk-dumper/issues"
-  },
-  "homepage": "https://github.com/Ma11y1/vk-dumper#readme",
+  "homepage": "https://github.com/Ma11y1/vk-dumper",
   "dependencies": {
     "request-vk-api": "^1.0.1"
   }

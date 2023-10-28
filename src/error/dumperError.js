@@ -18,7 +18,7 @@ export class DumperError extends Error {
 
     toString() {
         return `[${ this.ts }]
-        Module: ${ this.module } || Function: ${ this.func }
+        Module: ${ this.module } || Function: ${ this.func }()
 -------------------------------------------------------
 ${ this.message }
 -------------------------------------------------------`;

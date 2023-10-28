@@ -1,3 +1,6 @@
+import { DumperError } from "../../error/index.js";
+
+
 /**
  * @param {
  *     {
@@ -16,14 +19,14 @@
  */
 export function objectToHTML(obj) {
     if(!obj || typeof obj !== "object") {
-        throw new Error(`Invalid object! Object: [${ obj }]`);
+        throw new DumperError("objectToHTML","objectToHTML", `Invalid object! Object: [${ obj }]`);
     }
 
     let html = "";
     for(let key in obj) {
         let value = obj[key];
         if(!value) {
-            throw new Error(`Invalid value! Key: ${ key }`);
+            throw new DumperError("objectToHTML","objectToHTML", `Invalid value! Key: ${ key }`);
         }
 
         html += `<${ key }`;
@@ -35,6 +38,7 @@ export function objectToHTML(obj) {
             }
         }
 
+        // Defining single tags
         if(key === "br" || key === "img" || key === "input" || key === "area" || key === "base" || key === "link" || key === "meta" ||
             key === "col" || key === "embed" || key === "hr" || key === "keygen" || key === "link" || key === "meta" || key === "param" ||
             key === "source" || key === "track" || key === "wbr") {
