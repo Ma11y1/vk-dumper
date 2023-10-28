@@ -1,0 +1,28 @@
+{
+  "name": "vk-dumper",
+  "version": "1.0.0",
+  "main": "./src/vkDumper.js",
+  "type": "module",
+  "sideEffects": true,
+  "scripts": {
+    "start": "node ./src/vkDumper.js"
+  },
+  "keywords": [
+    "vk",
+    "dumper"
+  ],
+  "author": "Ma11y1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ma11y1/vk-dumper.git"
+  },
+  "description": "",
+  "bugs": {
+    "url": "https://github.com/Ma11y1/vk-dumper/issues"
+  },
+  "homepage": "https://github.com/Ma11y1/vk-dumper#readme",
+  "dependencies": {
+    "request-vk-api": "^1.0.1"
+  }
+}
