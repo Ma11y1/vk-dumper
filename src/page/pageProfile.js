@@ -1,11 +1,10 @@
-import { Page } from "./page.js";
-import { PROFILE_PATH } from "../constants.js";
+import { PageHTML } from "./pageHTML.js";
 
 
-export class PageProfile extends Page {
+export class PageProfile extends PageHTML {
 
-    constructor(name) {
-        super(PROFILE_PATH + name);
+    constructor(path, data) {
+        super(path, data);
         this.isPageProfile = true;
     }
 

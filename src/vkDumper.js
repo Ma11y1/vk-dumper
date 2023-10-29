@@ -1,4 +1,4 @@
-import { PageStyle } from "./page/elements/index.js";
+import { PageCSS } from "./page/index.js";
 
 
 class VkDumper {
@@ -12,14 +12,3 @@ class VkDumper {
     }
 
 }
-
-
-const style = new PageStyle("main.css",{
-    "*" : {
-        margin: 0,
-        padding: 0
-    },
-    "body": {
-        "background-color": "red"
-    }
-});

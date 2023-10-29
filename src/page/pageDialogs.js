@@ -1,11 +1,10 @@
-import { Page } from "./page.js";
-import { DIALOGS_PATH } from "../constants.js";
+import { PageHTML } from "./pageHTML.js";
 
 
-export class PageDialogs extends Page {
+export class PageDialogs extends PageHTML {
 
-    constructor(name) {
-        super(DIALOGS_PATH + name);
+    constructor(path, data) {
+        super(path, data);
         this.isPageDialogs = true;
     }
 

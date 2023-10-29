@@ -57,7 +57,7 @@ export function objectToHTML(obj) {
         if(typeof value === "object") {
             html += objectToHTML(value);
         } else {
-            html += String(value);
+            html += String(value || "");
         }
 
         html += `</${ key }>`;
