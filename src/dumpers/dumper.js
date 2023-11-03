@@ -1,7 +1,7 @@
 export class Dumper {
 
-    constructor() {
-
+    constructor(session) {
+        this._session = session;
     }
 
     dump() {

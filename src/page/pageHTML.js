@@ -5,7 +5,7 @@ import { objectToHTML } from "./generators/index.js";
 export class PageHTML extends Page {
 
     constructor(path, data) {
-        super(path = path.endsWith(".html") ? path : path + ".html", data);
+        super(path.endsWith(".html") ? path : path + ".html", data);
         this.isPageHTML = true;
 
         this._header = this._header || {};
@@ -39,6 +39,10 @@ export class PageHTML extends Page {
 
         super.generate(data);
         this._data = objectToHTML(data);
+    }
+
+    getHyperlink(title) {
+        return `<a href="${ this.path }">${ title ? title : this.path }</a>`;
     }
 
     get header() {
