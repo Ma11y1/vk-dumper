@@ -5,7 +5,7 @@ import { objectToCss } from "./generators/index.js";
 export class PageCSS extends Page {
 
     constructor(path, data) {
-        super(path = path.endsWith(".css") ? path : path + ".css", data);
+        super(path.endsWith(".css") ? path : path + ".css", data);
         this.isPageCSS = true;
     }
 

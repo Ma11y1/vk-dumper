@@ -1,4 +1,4 @@
-import { IOFS, Path } from "../io/index.js";
+import { IOFS, Path } from "../../io/index.js";
 import { PageElement } from "./pageElement.js";
 
 

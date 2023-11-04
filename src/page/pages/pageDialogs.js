@@ -1,4 +1,4 @@
-import { PageHTML } from "./pageHTML.js";
+import { PageHTML } from "../core/pageHTML.js";
 
 
 export class PageDialogs extends PageHTML {

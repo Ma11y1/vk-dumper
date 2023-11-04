@@ -1,6 +1,6 @@
-import { objectToHTML, PageCSS, PageHTML } from "./page/index.js";
-import { STYLE_PATH } from "./constants.js";
 import { DumperProfile } from "./dumpers/dumperProfile.js";
+import { DumperDialogs } from "./dumpers/dumperDialogs.js";
+import { DumperFriends } from "./dumpers/dumperFriends.js";
 
 
 export class VkDump {
@@ -12,20 +12,9 @@ export class VkDump {
     constructor({ session, customCss }) {
         this._session = session;
 
-        this._style = new PageCSS(STYLE_PATH + "base.css", {
-            "*": {
-                margin: 0,
-                padding: 0,
-                "background-color": "#555555"
-            },
-            ...customCss
-        });
-
-        this._dumpProfile = new DumperProfile();
-    }
-
-    async init() {
-        await Promise.all([this._style])
+        this._dumperProfile = new DumperProfile();
+        this._dumperDialogs = new DumperDialogs();
+        this._dumperFriends = new DumperFriends();
     }
 
     dump() {

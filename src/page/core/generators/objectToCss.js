@@ -1,4 +1,4 @@
-import { DumperError } from "../../error/index.js";
+import { DumperError } from "../../../error/index.js";
 
 
 export function objectToCss(obj) {
