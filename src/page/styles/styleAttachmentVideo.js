@@ -1,7 +1,7 @@
 import { PageCSS } from "../core/index.js";
 
 
-export class StyleProfile extends PageCSS {
+export class StyleAttachmentVideo extends PageCSS {
 
     constructor(path, custom) {
         super(

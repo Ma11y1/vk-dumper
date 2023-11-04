@@ -1,11 +1,11 @@
 import { PageHTML } from "../core/pageHTML.js";
-import { Config } from "../../config.js";
+import { PATH_DUMP_PROFILE } from "../../constants.js";
 
 
 export class PageProfile extends PageHTML {
 
     constructor() {
-        super(Config.pathDump.profile);
+        super(PATH_DUMP_PROFILE);
         this.isPageProfile = true;
     }
 

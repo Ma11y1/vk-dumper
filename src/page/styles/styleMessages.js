@@ -1,6 +1,12 @@
-export class StyleMessages {
+import { PageCSS } from "../core/index.js";
 
-    constructor() {
 
+export class StyleMessages extends PageCSS {
+
+    constructor(path, custom) {
+        super(
+            path,
+            { ...custom }
+        );
     }
 }

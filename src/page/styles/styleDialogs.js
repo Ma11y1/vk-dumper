@@ -1,6 +1,12 @@
-export class StyleDialogs {
+import { PageCSS } from "../core/index.js";
 
-    constructor() {
 
+export class StyleDialogs extends PageCSS {
+
+    constructor(path, custom) {
+        super(
+            path,
+            { ...custom }
+        );
     }
 }
