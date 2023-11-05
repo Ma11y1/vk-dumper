@@ -1,9 +1,11 @@
 import { DUMP_TYPE } from "../constants.js";
+import { EventEmitter } from "events";
 
 
-export class Dump {
+export class Dump extends EventEmitter {
 
     constructor(session) {
+        super();
         this.isDump = true;
 
         this.sessionID = session.id;
@@ -38,24 +40,37 @@ export class Dump {
             attachmentPhoto: false,
             attachmentVideo: false
         };
+        this.pages = {
+            profile: null,
+            friends: null,
+            friendsList: null,
+            dialogs: null,
+            messages: null,
+            attachmentPhoto: null,
+            attachmentVideo: null
+        };
 
         this.isForceWrite = false;
-        this.isCompleted = false;
+
         this.isProcess = false;
+        this.isWrited = false;
+        this.isCompleted = false;
     }
 
     start() {
         this.tsStart = Date.now();
         this.isProcess = true;
+        this.emit("start", this);
     }
 
-    stop() {
+    end() {
         this.tsEnd = Date.now();
         this.isProcess = false;
+        this.emit("end", this);
     }
 
     /**
-     * @param { DUMP_TYPE } type
+     * @param { DUMP_TYPE || string } type
      */
     complete(type) {
         if(!DUMP_TYPE.has(type)) return;
@@ -63,6 +78,16 @@ export class Dump {
             types = this.types;
 
         completed[type] = true;
+        this.emit(
+            "process",
+            {
+                type,
+                ts: Date.now(),
+                dumper: this.dumpers[type],
+                pages: this.pages[type]
+            },
+            this
+        );
 
         let isCompleted = true;
         for(let type in types) {
@@ -72,13 +97,14 @@ export class Dump {
         }
 
         if(isCompleted) {
-            this.stop();
+            this.end();
             this.isCompleted = true;
+            this.emit("complete", Date.now(), this);
         }
     }
 
     /**
-     * @param { DUMP_TYPE } type
+     * @param { DUMP_TYPE || string } type
      * @param { Dumper } dumper
      */
     setDumper(type, dumper) {
@@ -87,14 +113,17 @@ export class Dump {
             return;
         }
         this.dumpers[type] = dumper;
+
+        this.emit("updateDumper", type, dumper, this);
     }
 
     /**
-     * @param { DUMP_TYPE } type
+     * @param { DUMP_TYPE || string } type
      * @param { boolean } value
      */
     setType(type, value) {
         if(!DUMP_TYPE.has(type)) return;
         this.types[type] = value;
+        this.emit("updateType", type, value, this);
     }
 }

@@ -1,4 +1,4 @@
-export class Storage {
+export class StorageDumper {
     static _items = {};
 
     static set(key, item) {

@@ -10,12 +10,14 @@ import {
     StyleMessages,
     StyleProfile
 } from "./page/index.js";
-import { DumperDialogs, DumperFriends, DumperMessages, DumperProfile } from "./dumpers/index.js";
-import { Dump } from "./dumpers/dump.js";
-import { DumperSession } from "./dumpers/dumperSession.js";
+import { DUMP_TYPE } from "./constants.js";
+import { Dump, DumperDialogs, DumperFriends, DumperMessages, DumperProfile, DumperSession } from "./dumpers/index.js";
+import { StorageDumper } from "./storage.js";
+import { VKSession } from "request-vk-api";
 
 
 const E_INIT = "init";
+const E_DUMP = "dump";
 
 export class VKDumper extends EventEmitter {
 
@@ -23,16 +25,16 @@ export class VKDumper extends EventEmitter {
         super();
 
         // Init styles pages
-        this._styleBase = new StyleBase(Config.customStyle.base, Config.customStyle.base);
-        this._styleProfile = new StyleProfile(Config.customStyle.profile, Config.customStyle.profile);
+        this._styleBase = new StyleBase(Config.pathStyle.base, Config.customStyle.base);
+        this._styleProfile = new StyleProfile(Config.pathStyle.profile, Config.customStyle.profile);
         this._styleFriends = new StyleFriends(Config.pathStyle.friends, Config.customStyle.friends)
-        this._styleDialogs = new StyleDialogs(Config.customStyle.dialogs, Config.customStyle.dialogs);
-        this._styleMessages = new StyleMessages(Config.customStyle.messages, Config.customStyle.messages);
-        this._styleAttachmentPhoto = new StyleAttachmentPhoto(Config.customStyle.attachmentPhoto, Config.customStyle.attachmentPhoto);
-        this._styleAttachmentVideo = new StyleAttachmentVideo(Config.customStyle.attachmentVideo, Config.customStyle.attachmentVideo);
+        this._styleDialogs = new StyleDialogs(Config.pathStyle.dialogs, Config.customStyle.dialogs);
+        this._styleMessages = new StyleMessages(Config.pathStyle.messages, Config.customStyle.messages);
+        this._styleAttachmentPhoto = new StyleAttachmentPhoto(Config.pathStyle.attachmentPhoto, Config.customStyle.attachmentPhoto);
+        this._styleAttachmentVideo = new StyleAttachmentVideo(Config.pathStyle.attachmentVideo, Config.customStyle.attachmentVideo);
 
         // Saved styles in global storage
-        Storage.set("style", {
+        StorageDumper.set("style", {
             base: this._styleBase,
             profile: this._styleProfile,
             friends: this._styleFriends,
@@ -65,22 +67,22 @@ export class VKDumper extends EventEmitter {
 
     /**
      * @param { VKSession } session
-     * @param { Array<DUMP_TYPE> }
+     * @param { Array<DUMP_TYPE || string> }
      */
-    dump({ session, dumpTypes }) {
+    newDump({ session, dumpTypes }) {
         if(!this.isInit) {
             return;
         }
         if(!session) {
-            throw new DumperError("VKDumper", "constructor()", "VkDumper initialization error due to invalid session object!");
+            throw new DumperError("VKDumper", "dump()", "VkDumper initialization error due to invalid session object!");
         }
 
         const dump = new Dump(session);
-        dump.dumpers.session = new DumperSession(session);
-        dump.dumpers.profile = new DumperProfile(session);
-        dump.dumpers.friends = new DumperFriends(session);
-        dump.dumpers.dialogs = new DumperDialogs(session);
-        dump.dumpers.messages = new DumperMessages(session);
+        dump.setDumper(DUMP_TYPE.SESSION, new DumperSession(session, dump));
+        dump.setDumper(DUMP_TYPE.PROFILE, new DumperProfile(session, dump));
+        dump.setDumper(DUMP_TYPE.FRIENDS, new DumperFriends(session, dump));
+        dump.setDumper(DUMP_TYPE.DIALOGS, new DumperDialogs(session, dump));
+        dump.setDumper(DUMP_TYPE.MESSAGES, new DumperMessages(session, dump));
 
         if(dumpTypes) {
             for(let type of dumpTypes) {
@@ -88,11 +90,19 @@ export class VKDumper extends EventEmitter {
             }
         }
 
-        Storage.set(session.id, dump);
+        Storage.set(dump.sessionID, dump);
+
+        this.emit(E_DUMP, dump);
+        return dump;
     }
 }
 
+Config.init();
 const dumper = new VKDumper();
-dumper.init().then(() => {
+dumper.addListener("init", (dumper) => {
 
 });
+
+console.log(dumper.newDump({
+    session: new VKSession()
+}))

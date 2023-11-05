@@ -1,11 +1,11 @@
 {
   "name": "vk-dumper",
   "version": "1.0.0",
-  "main": "src/vkDump.js",
+  "main": "src/vkDumper.js",
   "type": "module",
   "sideEffects": true,
   "scripts": {
-    "start": "node src/vkDump.js"
+    "start": "node src/vkDumper.js"
   },
   "keywords": [
     "vk",

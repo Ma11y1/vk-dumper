@@ -10,7 +10,7 @@ export class Config {
         attachmentVideo: "attachments/video"
     };
     static pathStyle = {
-        dir: "./src",
+        dir: "./src/",
         base: "base.css",
         profile: "profile.css",
         friends: "friends.css",
@@ -74,7 +74,7 @@ export class Config {
         } else {
             for(let property in pathStyle) {
                 if(property === "dir") continue;
-                pathStyle[property] = pathStyle.dir + pathStyle[property];
+                pathStyle[property] = pathDump.dir + pathStyle.dir + pathStyle[property];
             }
         }
 
