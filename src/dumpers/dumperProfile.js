@@ -8,7 +8,7 @@ export class DumperProfile extends Dumper {
 
     }
 
-    dump(path) {
+    dump() {
 
     }
 
