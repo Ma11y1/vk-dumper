@@ -44,7 +44,7 @@ export class PageHTML extends Page {
     }
 
     /**
-     * @param { string || { type: "link", params: { rel: "stylesheet", href: string } } } data
+     * @param { PageCSS || string || { type: "link", params: { rel: "stylesheet", href: string } } } data
      */
     addStyle(data) {
         if(!data) return;
@@ -56,17 +56,37 @@ export class PageHTML extends Page {
                 type: "link",
                 params: {
                     rel: "stylesheet",
-                    href: data
+                    href: data.isPageCSS ? data.path.full : data
                 }
             });
         }
     }
 
-    addScript(data) {
+    /**
+     * @param { PageScript || string || { type: "script", params: { defer: null, src: string } } } data
+     * @param { {} } advancedParams
+     */
+    addScript(data, advancedParams) {
+        if(!data) return;
 
+        if(data.isPageScript) {
+            this._sctipts.push(data.objectData);
+        }
+
+        if(data.type) {
+            this._styles.push(data);
+        } else {
+            this._sctipts.push({
+                type: "script",
+                params: {
+                    ...advancedParams,
+                    src: data
+                }
+            });
+        }
     }
 
-    getHyperlink(title = "link", params) {
+    getHTMLElementFilePath(title = "link", params) {
         return objectToHTML({
                 type: "a",
                 value: title,
@@ -74,7 +94,6 @@ export class PageHTML extends Page {
                     href: this._path.full,
                     ...params
                 }
-
         });
     }
 

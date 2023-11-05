@@ -7,6 +7,7 @@ export class Dumper {
         if(!session.isInit) {
             throw new DumperError("Dumper", "constructor()", "Argument VK session is not initialize!");
         }
+        this.isDumper = true;
 
         this._session = session;
     }

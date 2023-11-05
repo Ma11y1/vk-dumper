@@ -19,20 +19,6 @@ export class Config {
         attachmentPhoto: "attachmentPhoto.css",
         attachmentVideo: "attachmentVideo.css"
     };
-    static pathMap = {
-        styleToPage: {
-            profile: [],
-            friends: [],
-            dialogs: [],
-            messages: [],
-            attachmentPhoto: [],
-            attachmentVideo: []
-        },
-        friendsToDialogs: "",
-        friendsToMessages: "",
-        messagesToAttachmentPhoto: "",
-        messagesToAttachmentVideo: "",
-    }
 
     static customStyle = {
         base: {},
@@ -89,15 +75,6 @@ export class Config {
             for(let property in pathStyle) {
                 if(property === "dir") continue;
                 pathStyle[property] = pathStyle.dir + pathStyle[property];
-            }
-        }
-
-        // Path map
-        const pathMap = this.pathMap,
-            dataPathMap = data.pathMap;
-        for(let property in dataPathMap) {
-            if(pathMap[property] !== undefined) {
-                pathMap[property] = dataPathMap[property];
             }
         }
 
