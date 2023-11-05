@@ -31,6 +31,12 @@ import { DumperError } from "../../../error/index.js";
  *             }
  *         ]
  *     }
+ *     ||
+ *     {
+ *         type: string,
+ *         value: any,
+ *         params: {}
+ *     }
  * } obj
  * @returns { string }
  */
@@ -40,7 +46,7 @@ export function objectToHTML(obj) {
     }
 
     let html = "";
-    if(Array.isArray(obj)) {
+    if(Array.isArray(obj)) { // Array elements
         for(let i = 0, length = obj.length; i < length; i++) {
             const value = obj[i];
             if(!value) {
@@ -53,10 +59,13 @@ export function objectToHTML(obj) {
                 html += elementFrom(value);
             }
         }
-    } else if(typeof obj === "object") {
+    } else if(typeof obj === "object" && obj.type) { // Single element
+        html += elementFrom(obj);
+    } else if(typeof obj === "object") { // Object with key = type element
         for(let key in obj) {
             let value = obj[key];
-            if(!value) {
+
+            if(value === undefined) {
                 throw new DumperError("objectToHTML", "objectToHTML()", `Invalid value! Key: ${ key }`);
             }
 
@@ -107,7 +116,6 @@ function elementFrom(obj) {
 
     // Defining single tags
     if(type === "br" || type === "img" || type === "input" || type === "area" || type === "base" || type === "link" || type === "meta" || type === "col" || type === "embed" || type === "hr" || type === "keygen" || type === "link" || type === "meta" || type === "param" || type === "source" || type === "track" || type === "wbr") {
-
         return html + "/>";
     } else {
         html += ">";

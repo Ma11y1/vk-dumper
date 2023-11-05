@@ -8,6 +8,7 @@ export class Path {
     constructor(path) {
         this.isPath = true;
 
+        this._full = null;
         this._path = null;
         this._root = null;
         this._dir = null;
@@ -20,7 +21,7 @@ export class Path {
     }
 
     normalize() {
-        this.path = path.normalize(this._path);
+        this._path = path.normalize(this._path);
         this._isNormalize = true;
     }
 
@@ -58,12 +59,17 @@ export class Path {
         this._base = target.base;
         this._ext = target.ext;
         this._name = target.name;
+        this._full = path.resolve(this._path);
 
-        this._isNormalize = false;
+        this.normalize();
     }
 
     get path() {
         return this._path;
+    }
+
+    get full() {
+        return this._full;
     }
 
     get root() {

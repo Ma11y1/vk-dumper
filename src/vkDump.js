@@ -2,21 +2,15 @@ import { EventEmitter } from "events";
 import { Config } from "./config.js";
 import { DumperError } from "./error/index.js";
 import {
-    PATH_STYLE_ATTACHMENT_PHOTO,
-    PATH_STYLE_ATTACHMENT_VIDEO, PATH_STYLE_BASE,
-    PATH_STYLE_DIALOGS,
-    PATH_STYLE_MESSAGES, PATH_STYLE_PROFILE
-} from "./constants.js";
-import {
     StyleAttachmentPhoto,
     StyleAttachmentVideo,
     StyleBase,
     StyleDialogs,
+    StyleFriends,
     StyleMessages,
     StyleProfile
 } from "./page/index.js";
-import { DumperDialogs, DumperFriends, DumperProfile } from "./dumpers/index.js";
-import { StyleFriends } from "./page/styles/styleFriends.js";
+import { DumperDialogs, DumperFriends, DumperMessages, DumperProfile } from "./dumpers/index.js";
 
 //TODO Сделать чтобы стили записывались только один раз а не при каждом новом дампе
 export class VkDump extends EventEmitter {
@@ -25,8 +19,14 @@ export class VkDump extends EventEmitter {
      * @param { VKSession } session
      * @param { { base, profile, dialogs, messages, attachmentPhoto, attachmentVideo } } customCss
      */
-    constructor({ session, customCss }) {
+    constructor({
+                    session, isDumpProfile, isDumpFriends, isDumpFriendList,
+                    isDumpDialogs, isDumpMessages, isDumpAttachmentPhoto, isDumpAttachmentVideo
+                }) {
         super();
+        if(!session) {
+            throw new DumperError("VkDump", "constructor()", "VkDump initialization error due to invalid session object!");
+        }
         this._session = session;
 
         this.storage = new Storage();
@@ -60,6 +60,7 @@ export class VkDump extends EventEmitter {
         this._dumperProfile = new DumperProfile(session);
         this._dumperFriends = new DumperFriends(session);
         this._dumperDialogs = new DumperDialogs(session);
+        this._dumperMessages = new DumperMessages(session);
 
         this.isInitStyle = false;
         this.isInitDumpers = false;

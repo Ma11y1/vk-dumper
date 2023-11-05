@@ -10,6 +10,8 @@ export class PageHTML extends Page {
 
         this._header = this._header || {};
         this._body = this._body || {};
+        this._styles = [];
+        this._sctipts = [];
     }
 
     generate(data) {
@@ -41,8 +43,39 @@ export class PageHTML extends Page {
         this._data = objectToHTML(data);
     }
 
-    getHyperlink(title) {
-        return `<a href="${ this.path }">${ title ? title : this.path }</a>`;
+    /**
+     * @param { string || { type: "link", params: { rel: "stylesheet", href: string } } } data
+     */
+    addStyle(data) {
+        if(!data) return;
+
+        if(data.type) {
+            this._styles.push(data);
+        } else {
+            this._styles.push({
+                type: "link",
+                params: {
+                    rel: "stylesheet",
+                    href: data
+                }
+            });
+        }
+    }
+
+    addScript(data) {
+
+    }
+
+    getHyperlink(title = "link", params) {
+        return objectToHTML({
+                type: "a",
+                value: title,
+                params: {
+                    href: this._path.full,
+                    ...params
+                }
+
+        });
     }
 
     get header() {
@@ -59,8 +92,6 @@ export class PageHTML extends Page {
         this._header = value;
         this._objectData.html.header = value;
         this.isGenerated = false;
-
-        this.generate(this._objectData);
     }
 
     set body(value) {
@@ -69,7 +100,19 @@ export class PageHTML extends Page {
         this._body = value;
         this._objectData.html.body = value;
         this.isGenerated = false;
+    }
 
-        this.generate(this._objectData);
+    set styles(value) {
+        if(!Array.isArray(value)) return;
+
+        this._styles = value;
+        this.isGenerated = false;
+    }
+
+    set scripts(value) {
+        if(!Array.isArray(value)) return;
+
+        this._sctipts = value;
+        this.isGenerated = false;
     }
 }
