@@ -4,16 +4,18 @@ import { PageElement } from "./pageElement.js";
 
 export class Page extends PageElement {
 
-    constructor(path, data) {
-        super(data);
+    constructor(path) {
+        super();
         this.isPage = true;
 
         this._path = new Path(path);
         this._name = this._path.name;
     }
 
-    write(path = this._path) {
-        if(!path) return;
+    write(path) {
+        if(!path) {
+            path = this._path;
+        }
         path = path.isPath ? path.path : path;
 
         return IOFS.writeFile(path, this._data);

@@ -1,20 +1,38 @@
+import { EventEmitter } from "events";
 import { DumperError } from "../error/index.js";
 
 
-export class Dumper {
+export class Dumper extends EventEmitter {
 
-    constructor(session, dump) {
-        if(!(session && session.isInit && dump && dump.isDump)) {
-            throw new DumperError("Dumper", "constructor()", "Argument VK session or Dump is invalid!");
+    constructor(dump) {
+        super();
+
+        if(!(dump && dump.isDump && dump.session && dump.session.isInit)) {
+            throw new DumperError(this.constructor.name, "constructor()", "Argument Dump is invalid!");
         }
+
         this.isDumper = true;
 
-        this._session = session;
+        this._id = dump.session.id;
+        this._session = dump.session;
         this._dump = dump;
+
+        this.isStop = false;
         this.isProcess = false;
     }
 
-    async start() {}
+    async start() {
+        this.isProcess = true;
+    }
+
+    stop() {
+        this.isStop = true;
+        this.isProcess = false;
+    }
+
+    get id() {
+        return this._id;
+    }
 
     get session() {
         return this._session;

@@ -1,19 +1,17 @@
 export class PageElement {
 
-    constructor(data) {
+    constructor() {
         this.isPageElement = true;
 
         this._objectData = null;
         this._data = "";
 
         this.isGenerated = false;
-
-        this.generate(data);
     }
 
     generate(data) {
         if(!data || typeof data !== "object") {
-            data = {};
+            return;
         }
 
         this._objectData = data;
@@ -33,8 +31,9 @@ export class PageElement {
     }
 
     set objectData(value) {
-        if(!value || typeof value !== "object") return;
-        this._objectData = value;
+        if(!value || typeof value !== "object") {
+            return;
+        }
         this.generate(value);
     }
 }

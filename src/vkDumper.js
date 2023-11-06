@@ -11,18 +11,29 @@ import {
     StyleProfile
 } from "./page/index.js";
 import { DUMP_TYPE } from "./constants.js";
-import { Dump, DumperDialogs, DumperFriends, DumperMessages, DumperProfile, DumperSession } from "./dumpers/index.js";
+import {
+    Dump, DumperAttachmentPhoto,
+    DumperAttachmentVideo,
+    DumperDialogs,
+    DumperFriends,
+    DumperMessages,
+    DumperProfile
+} from "./dumpers/index.js";
 import { StorageDumper } from "./storage.js";
 import { VKSession } from "request-vk-api";
 
 
-const E_INIT = "init";
-const E_DUMP = "dump";
-
+//TODO Сделать отслеживание процесса
+//TODO Доделать дамперы
+//TODO Доделать стили и шаблоны страниц
+//TODO Сделать менеджер воркеров для многопоточной обработки
+//TODO Сделать запись страниц на диск
 export class VKDumper extends EventEmitter {
 
-    constructor() {
+    constructor(config) {
         super();
+
+        Config.init(config);
 
         // Init styles pages
         this._styleBase = new StyleBase(Config.pathStyle.base, Config.customStyle.base);
@@ -44,8 +55,11 @@ export class VKDumper extends EventEmitter {
             attachmentVideo: this._styleAttachmentVideo
         });
 
-        // Write styles pages
-        Promise.all([
+        this.isInit = false;
+    }
+
+    init() {
+        return Promise.all([
             this._styleBase.write(),
             this._styleProfile.write(),
             this._styleFriends.write(),
@@ -56,53 +70,93 @@ export class VKDumper extends EventEmitter {
         ])
             .then(() => {
                 this.isInit = true;
-                this.emit(E_INIT, this);
+                this.emit("init", this);
+                return this;
             })
             .catch((err) => {
-                throw new DumperError("VKDumper", "constructor()", `Error write style pages!\n${ err.message }`)
+                throw new DumperError("VKDumper", "init()", `Error write style pages!\n${ err.message }`)
             });
-
-        this.isInit = false;
     }
 
     /**
-     * @param { VKSession } session
+     * @param { string } token
      * @param { Array<DUMP_TYPE || string> }
      */
-    newDump({ session, dumpTypes }) {
+    async newDump({ token, language, charset }) {
         if(!this.isInit) {
-            return;
+            throw new DumperError("VKDumper", "newDump()", "VkDumper is not initialize!");
         }
-        if(!session) {
+
+        const session = new VKSession({ token, language });
+        await session.init();
+
+        if(!session.isInit) {
             throw new DumperError("VKDumper", "dump()", "VkDumper initialization error due to invalid session object!");
         }
 
         const dump = new Dump(session);
-        dump.setDumper(DUMP_TYPE.SESSION, new DumperSession(session, dump));
-        dump.setDumper(DUMP_TYPE.PROFILE, new DumperProfile(session, dump));
-        dump.setDumper(DUMP_TYPE.FRIENDS, new DumperFriends(session, dump));
-        dump.setDumper(DUMP_TYPE.DIALOGS, new DumperDialogs(session, dump));
-        dump.setDumper(DUMP_TYPE.MESSAGES, new DumperMessages(session, dump));
-
-        if(dumpTypes) {
-            for(let type of dumpTypes) {
-                dump.setType(type, true);
-            }
+        if(charset !== undefined) {
+            dump.charset = charset;
         }
 
-        Storage.set(dump.sessionID, dump);
+        StorageDumper.set(dump.sessionID, dump);
 
-        this.emit(E_DUMP, dump);
+        this.emit("newDump", { origin: this, ts: Date.now(), session, dump });
         return dump;
     }
+
+    /**
+     * @param { Dump } dump
+     * @param { boolean } isDumpProfile
+     * @param { boolean } isDumpFriends
+     * @param { boolean } isDumpFriendsList
+     * @param { boolean } isDumpDialogs
+     * @param { boolean } isDumpMessages
+     * @param { boolean } isDumpAttachmentPhoto
+     * @param { boolean } isDumpAttachmentVideo
+     */
+    async dump(dump, {
+        isDumpProfile = true, isDumpFriends = true, isDumpFriendsList = true,
+        isDumpDialogs = true, isDumpMessages, isDumpAttachmentPhoto, isDumpAttachmentVideo
+    }) {
+        if(!this.isInit) {
+            throw new DumperError("VKDumper", "dump()", "VkDumper is not initialize!");
+        }
+
+        const tsStart = Date.now();
+        this.emit("dumpStart", {
+            origin: this,
+            ts: tsStart,
+            dump,
+            isDumpProfile,
+            isDumpFriends,
+            isDumpFriendsList,
+            isDumpDialogs,
+            isDumpMessages,
+            isDumpAttachmentPhoto,
+            isDumpAttachmentVideo
+        });
+
+        const dumpers = [];
+
+        if(isDumpProfile) dumpers.push(new DumperProfile(dump).start());
+        if(isDumpFriends) dumpers.push(new DumperFriends(dump).start());
+        if(isDumpDialogs) dumpers.push(new DumperDialogs(dump).start());
+        if(isDumpMessages) dumpers.push(new DumperMessages(dump).start());
+        if(isDumpAttachmentPhoto) dumpers.push(new DumperAttachmentPhoto(dump).start());
+        if(isDumpAttachmentVideo) dumpers.push(new DumperAttachmentVideo(dump).start());
+
+        return Promise.all(dumpers)
+            .then(() => {
+                this.emit("dumpComplete", {
+                    origin: this,
+                    tsStart: tsStart,
+                    tsEnd: Date.now(),
+                    dump
+                });
+            })
+            .catch((err) => {
+                throw new DumperError("VKDumper", "dump()", `Error dump vk session! SessionID: ${ dump.sessionID }.\n${ err.message }`);
+            });
+    }
 }
-
-Config.init();
-const dumper = new VKDumper();
-dumper.addListener("init", (dumper) => {
-
-});
-
-console.log(dumper.newDump({
-    session: new VKSession()
-}))

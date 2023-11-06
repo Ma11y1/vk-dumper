@@ -6,7 +6,12 @@ export class StyleProfile extends PageCSS {
     constructor(path, custom) {
         super(
             path,
-            { ...custom }
+            {
+                body: {
+                    "background-color": "red"
+                },
+                ...custom
+            }
         );
     }
 }

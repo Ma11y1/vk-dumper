@@ -1,7 +1,7 @@
 export class Config {
     static pathDump = {
         dir: "./dump/",
-        profile: "",
+        profile: "profiles/",
         friends: "",
         friendList: "",
         dialogs: "dialogs/",
@@ -9,8 +9,9 @@ export class Config {
         attachmentPhoto: "attachments/photo",
         attachmentVideo: "attachments/video"
     };
+
     static pathStyle = {
-        dir: "./src/",
+        dir: "src/",
         base: "base.css",
         profile: "profile.css",
         friends: "friends.css",
@@ -29,6 +30,8 @@ export class Config {
         attachmentPhoto: {},
         attachmentVideo: {}
     };
+
+    static charset = "utf-8";
 
     static init(data = {}) {
 
@@ -86,5 +89,7 @@ export class Config {
                 customStyle[property] = dataCustomStyle[property];
             }
         }
+
+        if(data.charset !== undefined) this.charset = data.charset;
     }
 }
